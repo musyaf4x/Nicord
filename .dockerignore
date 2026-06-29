@@ -1,0 +1,24 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+npm-debug.log*
+
+.next/
+out/
+build/
+
+.git/
+.gitignore
+
+README.md
+docs/
+raw\ discovery.md
+
+# Local dev tools
+.vorth/
+.agent/
+.codegraph/
+.agents/
+.gemini/
