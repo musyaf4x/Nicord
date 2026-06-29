@@ -5,7 +5,8 @@ import type { NextRequest } from "next/server";
 // Paths that don't require auth
 const PUBLIC_PATHS = ["/login", "/register", "/api/auth"];
 
-export default auth(function middleware(req: NextRequest) {
+// Next.js 16: renamed from middleware to proxy
+export default auth(function proxy(req: NextRequest) {
   const { nextUrl, auth: session } = req as typeof req & { auth: unknown };
 
   const isPublicPath = PUBLIC_PATHS.some((path) =>
@@ -16,7 +17,10 @@ export default auth(function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", nextUrl));
   }
 
-  if (session && (nextUrl.pathname === "/login" || nextUrl.pathname === "/register")) {
+  if (
+    session &&
+    (nextUrl.pathname === "/login" || nextUrl.pathname === "/register")
+  ) {
     return NextResponse.redirect(new URL("/dashboard", nextUrl));
   }
 
