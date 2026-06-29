@@ -18,6 +18,7 @@
   "dependencies": {
     "@astryxdesign/core": "^0.1.1",
     "@astryxdesign/theme-neutral": "^0.1.1",
+    "@hookform/resolvers": "^5.4.0",
     "@prisma/client": "^7.8.0",
     "@tanstack/react-query": "^5.101.2",
     "@tanstack/react-query-devtools": "^5.101.2",
@@ -33,6 +34,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@astryxdesign/cli": "^0.1.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
