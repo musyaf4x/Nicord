@@ -21,6 +21,7 @@ import {
 } from "@/lib/types/order";
 import { StatusPanel } from "../_components/status-panel";
 import { InvoicePanel } from "../_components/invoice-panel";
+import { PaymentForm } from "../_components/payment-form";
 
 export async function generateMetadata({
   params,
@@ -179,6 +180,14 @@ export default async function OrderDetailPage({
 
       {/* Status panel — client component for interactivity */}
       <StatusPanel order={serialized} onUpdated={() => {}} />
+
+      {/* Catat Bayar — show when there's outstanding balance and order not cancelled */}
+      {Number(order.amountDue) > 0 && order.status !== "CANCELLED" && (
+        <PaymentForm
+          orderId={order.id}
+          amountDue={Number(order.amountDue)}
+        />
+      )}
 
       {/* Invoice panel — client component */}
       <InvoicePanel order={serialized} businessName={order.business.name} />

@@ -10,6 +10,7 @@ import {
   Heading,
   Badge,
 } from "@astryxdesign/core";
+import { FileDown } from "lucide-react";
 import {
   formatRupiah,
   PAYMENT_STATUS_META,
@@ -190,7 +191,7 @@ export function InvoicePanel({ order, businessName }: InvoicePanelProps) {
           </VStack>
         )}
 
-        {/* WA actions */}
+        {/* Actions */}
         <VStack gap={2}>
           <Button
             label={copied ? "✓ Tersalin!" : "Copy Pesan WA"}
@@ -211,6 +212,30 @@ export function InvoicePanel({ order, businessName }: InvoicePanelProps) {
               id="send-wa-btn"
             />
           )}
+          <a
+            href={`/api/orders/${order.id}/invoice-pdf`}
+            download
+            id="download-pdf-btn"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              width: "100%",
+              padding: "10px 16px",
+              borderRadius: 10,
+              border: "1.5px solid var(--color-border-default)",
+              background: "transparent",
+              color: "var(--color-text-secondary)",
+              textDecoration: "none",
+              fontSize: 14,
+              fontWeight: 500,
+              cursor: "pointer",
+            }}
+          >
+            <FileDown size={16} />
+            Download PDF Invoice
+          </a>
         </VStack>
       </VStack>
     </Card>
