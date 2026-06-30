@@ -1,19 +1,11 @@
 import type { Metadata } from "next";
+import { DashboardClient } from "./dashboard-client";
 
 export const metadata: Metadata = {
-  title: "Dashboard",
+  title: "Dashboard — Nicord",
+  description: "Ringkasan performa usahamu",
 };
 
-// Placeholder — Sprint 1 S4-02 will build the real dashboard
 export default function DashboardPage() {
-  return (
-    <div style={{ padding: "var(--spacing-6)" }}>
-      <h1 style={{ color: "var(--color-text-primary)" }}>
-        Dashboard
-      </h1>
-      <p style={{ color: "var(--color-text-secondary)" }}>
-        Nicord — Sprint 1 foundation in progress
-      </p>
-    </div>
-  );
+  return <DashboardClient />;
 }
