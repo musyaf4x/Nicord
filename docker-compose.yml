@@ -17,50 +17,8 @@ services:
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - nicord-net
-
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: nicord
-      POSTGRES_USER: ${POSTGRES_USER:-nicord}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nicord} -d nicord"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - nicord-net
-    # Don't expose DB port to host in production
-    # ports:
-    #   - "5432:5432"
-
-  # Reverse proxy — uncomment if not using external Nginx/Caddy
-  # nginx:
-  #   image: nginx:alpine
-  #   restart: unless-stopped
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-  #     - certbot_certs:/etc/letsencrypt:ro
-  #   depends_on:
-  #     - app
-  #   networks:
-  #     - nicord-net
-
-volumes:
-  postgres_data:
-    driver: local
 
 networks:
   nicord-net:
