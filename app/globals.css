@@ -1,0 +1,27 @@
+/* globals.css — Nicord base styles */
+
+:root {
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mobile-first: prevent zoom on input focus (iOS) */
+input,
+select,
+textarea {
+  font-size: 16px;
+}

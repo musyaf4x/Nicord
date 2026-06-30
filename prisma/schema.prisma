@@ -1,0 +1,350 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified DateTime?
+  password      String
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  memberships BusinessMember[]
+  accounts    Account[]
+  sessions    Session[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// ─── Business ────────────────────────────────────────────────────────────────
+
+model Business {
+  id                String             @id @default(cuid())
+  name              String
+  category          String             @default("")
+  whatsappNumber    String?
+  address           String?
+  logoUrl           String?
+  paymentMethods    String[]
+  defaultNotes      String?
+  isOnboarded       Boolean            @default(false)
+  lowStockThreshold Int                @default(5)
+  stockDeductOn     StockDeductTrigger @default(CONFIRMED)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  members  BusinessMember[]
+  products Product[]
+  customers Customer[]
+  orders   Order[]
+  expenses Expense[]
+
+  @@map("businesses")
+}
+
+model BusinessMember {
+  id         String     @id @default(cuid())
+  businessId String
+  userId     String
+  role       MemberRole @default(ADMIN)
+  joinedAt   DateTime   @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, userId])
+  @@map("business_members")
+}
+
+// ─── Products ────────────────────────────────────────────────────────────────
+
+model ProductCategory {
+  id         String   @id @default(cuid())
+  businessId String
+  name       String
+  createdAt  DateTime @default(now())
+
+  products Product[]
+
+  @@unique([businessId, name])
+  @@map("product_categories")
+}
+
+model Product {
+  id           String   @id @default(cuid())
+  businessId   String
+  categoryId   String?
+  name         String
+  description  String?
+  imageUrl     String?
+  sellingPrice Decimal  @db.Decimal(12, 2)
+  costPrice    Decimal? @db.Decimal(12, 2)
+  stock        Int      @default(0)
+  unit         String   @default("pcs")
+  isActive     Boolean  @default(true)
+  isUnlimited  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  business       Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  category       ProductCategory? @relation(fields: [categoryId], references: [id])
+  orderItems     OrderItem[]
+  stockMovements StockMovement[]
+
+  @@map("products")
+}
+
+// ─── Customers ───────────────────────────────────────────────────────────────
+
+model Customer {
+  id             String   @id @default(cuid())
+  businessId     String
+  name           String
+  whatsappNumber String?
+  address        String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  orders   Order[]
+
+  @@unique([businessId, whatsappNumber])
+  @@map("customers")
+}
+
+// ─── Orders ──────────────────────────────────────────────────────────────────
+
+model Order {
+  id            String        @id @default(cuid())
+  businessId    String
+  customerId    String
+  orderNumber   String
+  orderDate     DateTime      @default(now())
+  deliveryDate  DateTime?
+  channel       OrderChannel  @default(WHATSAPP)
+  status        OrderStatus   @default(DRAFT)
+  paymentStatus PaymentStatus @default(UNPAID)
+  notes         String?
+  subtotal      Decimal       @db.Decimal(12, 2) @default(0)
+  discount      Decimal       @db.Decimal(12, 2) @default(0)
+  shippingCost  Decimal       @db.Decimal(12, 2) @default(0)
+  grandTotal    Decimal       @db.Decimal(12, 2) @default(0)
+  amountPaid    Decimal       @db.Decimal(12, 2) @default(0)
+  amountDue     Decimal       @db.Decimal(12, 2) @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  business      Business             @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  customer      Customer             @relation(fields: [customerId], references: [id])
+  items         OrderItem[]
+  payments      Payment[]
+  invoice       Invoice?
+  statusHistory OrderStatusHistory[]
+
+  @@unique([businessId, orderNumber])
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  productId   String
+  productName String
+  unitPrice   Decimal @db.Decimal(12, 2)
+  quantity    Int
+  subtotal    Decimal @db.Decimal(12, 2)
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model OrderStatusHistory {
+  id        String      @id @default(cuid())
+  orderId   String
+  status    OrderStatus
+  notes     String?
+  changedAt DateTime    @default(now())
+  changedBy String
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_status_history")
+}
+
+// ─── Payments ─────────────────────────────────────────────────────────────────
+
+model Payment {
+  id            String        @id @default(cuid())
+  orderId       String
+  method        PaymentMethod
+  amount        Decimal       @db.Decimal(12, 2)
+  paidAt        DateTime      @default(now())
+  notes         String?
+  proofImageUrl String?
+  createdBy     String
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+// ─── Invoices ─────────────────────────────────────────────────────────────────
+
+model Invoice {
+  id            String   @id @default(cuid())
+  orderId       String   @unique
+  invoiceNumber String
+  issuedAt      DateTime @default(now())
+  publicSlug    String?  @unique
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("invoices")
+}
+
+// ─── Stock ────────────────────────────────────────────────────────────────────
+
+model StockMovement {
+  id          String            @id @default(cuid())
+  productId   String
+  type        StockMovementType
+  quantity    Int
+  stockBefore Int
+  stockAfter  Int
+  referenceId String?
+  notes       String?
+  createdAt   DateTime          @default(now())
+  createdBy   String
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("stock_movements")
+}
+
+// ─── Expenses ─────────────────────────────────────────────────────────────────
+
+model Expense {
+  id            String          @id @default(cuid())
+  businessId    String
+  category      ExpenseCategory
+  amount        Decimal         @db.Decimal(12, 2)
+  date          DateTime
+  notes         String?
+  proofImageUrl String?
+  createdAt     DateTime        @default(now())
+  createdBy     String
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@map("expenses")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  STAFF_PRODUCTION
+}
+
+enum OrderChannel {
+  WHATSAPP
+  INSTAGRAM
+  TIKTOK
+  MARKETPLACE
+  OFFLINE
+  OTHER
+}
+
+enum OrderStatus {
+  DRAFT
+  CONFIRMED
+  PROCESSING
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  QRIS
+  GOPAY
+  OVO
+  DANA
+  SHOPEEPAY
+  OTHER
+}
+
+enum StockMovementType {
+  ORDER_OUT
+  ADJUSTMENT_IN
+  ADJUSTMENT_OUT
+  RETURN_IN
+}
+
+enum ExpenseCategory {
+  BAHAN_BAKU
+  PACKAGING
+  ONGKIR
+  IKLAN
+  OPERASIONAL
+  GAJI
+  LAIN_LAIN
+}
+
+enum StockDeductTrigger {
+  CONFIRMED
+  PAID
+}
