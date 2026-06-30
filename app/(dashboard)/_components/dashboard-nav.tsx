@@ -16,6 +16,7 @@ import {
   CreditCard,
   BarChart2,
   Archive,
+  Receipt,
   Settings,
   LogOut,
 } from "lucide-react";
@@ -23,10 +24,11 @@ import { signOut } from "next-auth/react";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Order", href: "/orders", icon: ShoppingCart },
   { label: "Produk", href: "/products", icon: Package },
   { label: "Pelanggan", href: "/customers", icon: Users },
-  { label: "Order", href: "/orders", icon: ShoppingCart },
   { label: "Piutang", href: "/payments", icon: CreditCard },
+  { label: "Pengeluaran", href: "/expenses", icon: Receipt },
   { label: "Stok", href: "/stock", icon: Archive },
   { label: "Laporan", href: "/reports", icon: BarChart2 },
 ];
