@@ -129,7 +129,9 @@ export default async function OrderDetailPage({
       {/* Header */}
       <HStack justify="between" align="center">
         <HStack align="center" gap={3}>
-          <Button label="← Kembali" variant="ghost" as={Link} href="/orders" />
+          <Link href="/orders" style={{ textDecoration: "none" }}>
+            <Button label="← Kembali" variant="ghost" />
+          </Link>
           <VStack gap={0}>
             <Heading level={1}>#{order.orderNumber}</Heading>
             <Text size="xsm" style={{ color: "var(--color-text-secondary)" }}>
@@ -168,13 +170,13 @@ export default async function OrderDetailPage({
               </Text>
             )}
           </VStack>
-          <Button
-            label="Lihat Pelanggan"
-            variant="ghost"
-            size="sm"
-            as={Link}
-            href={`/customers/${order.customer.id}`}
-          />
+          <Link href={`/customers/${order.customer.id}`} style={{ textDecoration: "none" }}>
+            <Button
+              label="Lihat Pelanggan"
+              variant="ghost"
+              size="sm"
+            />
+          </Link>
         </HStack>
       </Card>
 
