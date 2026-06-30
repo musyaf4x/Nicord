@@ -15,6 +15,7 @@ import {
   ShoppingCart,
   CreditCard,
   BarChart2,
+  Archive,
   Settings,
   LogOut,
 } from "lucide-react";
@@ -25,7 +26,8 @@ const NAV_ITEMS = [
   { label: "Produk", href: "/products", icon: Package },
   { label: "Pelanggan", href: "/customers", icon: Users },
   { label: "Order", href: "/orders", icon: ShoppingCart },
-  { label: "Pembayaran", href: "/payments", icon: CreditCard },
+  { label: "Piutang", href: "/payments", icon: CreditCard },
+  { label: "Stok", href: "/stock", icon: Archive },
   { label: "Laporan", href: "/reports", icon: BarChart2 },
 ];
 
