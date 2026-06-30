@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,7 +18,7 @@ import {
 
 interface StatusPanelProps {
   order: OrderDetail;
-  onUpdated: () => void;
+  onUpdated?: () => void;
 }
 
 const STATUS_CONFIRM_MSG: Partial<Record<OrderStatus, string>> = {
@@ -46,7 +46,7 @@ export function StatusPanel({ order, onUpdated }: StatusPanelProps) {
       setError(null);
       setConfirming(null);
       queryClient.invalidateQueries({ queryKey: ["order", order.id] });
-      onUpdated();
+      onUpdated?.();
     },
     onError: (e: Error) => {
       setError(e.message);

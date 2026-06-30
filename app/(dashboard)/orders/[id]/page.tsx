@@ -179,7 +179,7 @@ export default async function OrderDetailPage({
       </Card>
 
       {/* Status panel — client component for interactivity */}
-      <StatusPanel order={serialized} onUpdated={() => {}} />
+      <StatusPanel order={serialized} />
 
       {/* Catat Bayar — show when there's outstanding balance and order not cancelled */}
       {Number(order.amountDue) > 0 && order.status !== "CANCELLED" && (
