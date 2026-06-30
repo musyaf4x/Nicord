@@ -62,11 +62,13 @@ model Session {
 model Business {
   id                String             @id @default(cuid())
   name              String
-  category          String
+  category          String             @default("")
   whatsappNumber    String?
   address           String?
   logoUrl           String?
   paymentMethods    String[]
+  defaultNotes      String?
+  isOnboarded       Boolean            @default(false)
   lowStockThreshold Int                @default(5)
   stockDeductOn     StockDeductTrigger @default(CONFIRMED)
   createdAt         DateTime           @default(now())
